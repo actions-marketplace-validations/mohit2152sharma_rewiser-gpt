@@ -1,6 +1,7 @@
 #!/usr/local/bin/python
 
 import logging
+import os
 
 from rewiser.anki import pseudo_anki
 from rewiser.email import Emailer
@@ -26,5 +27,9 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
+    log_level = logging.getLevelName(level=os.getenv("LOG_LEVEL", "INFO").upper())
+
+    logging.basicConfig(
+        level=log_level, format="%(asctime)s - %(levelname)s - %(message)s"
+    )
     main()

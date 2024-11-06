@@ -13,7 +13,7 @@ inputs:
   subject:
     description: "Email subject"
     required: false
-    default: "Rewiser Email" 
+    default: "Rewiser Email"
   doc_directory:
     description: "The directory to read files from"
     required: true
@@ -32,6 +32,10 @@ inputs:
   openai_api_key:
     description: "OpenAI API Key for generating questions"
     required: false
+  log_level:
+    description: "Log level to be used for python"
+    required: false
+    default: "INFO"
 
 runs:
   using: "composite"
@@ -48,11 +52,12 @@ runs:
         export INPUT_SMTP_USERNAME=${{ inputs.smtp_username }}
         export INPUT_SMTP_PASSWORD=${{ inputs.smtp_password }}
         export INPUT_OPENAI_API_KEY=${{ inputs.openai_api_key }}
+        export LOG_LEVEL=${{ inputs.log_level }}
         echo "installing python dependencies"
         pip install -r ${GITHUB_ACTION_PATH}/requirements.txt
         python ${GITHUB_ACTION_PATH}/main.py
       shell: bash
 
 branding:
-  icon: 'book-open'
-  color: 'blue'
+  icon: "book-open"
+  color: "blue"

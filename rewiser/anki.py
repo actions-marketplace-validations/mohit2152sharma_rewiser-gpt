@@ -4,6 +4,8 @@ from typing import List
 
 from rewiser.utils import file_commit_date
 
+logger = logging.getLogger(__name__)
+
 EF = 2.5
 
 
@@ -47,5 +49,5 @@ def pseudo_anki(filenames: List[str]) -> List[str]:
             revision_date = new_date
         if current_date.strftime("%Y-%m-%d") in revision_dates:
             result.append(file)
-    logging.info(f"files selected: {result}")
+    logger.info(f"files selected: {result}")
     return result

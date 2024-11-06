@@ -9,6 +9,8 @@ from langchain.prompts.chat import ChatPromptValue
 from rewiser.gpt.utils import create_prompt_template
 from rewiser.utils import read_env_var
 
+logger = logging.getLogger(__name__)
+
 
 class OpenAIAgent:
     def __init__(self, template_name: str, openai_key: str | None = None) -> None:
@@ -24,22 +26,22 @@ class OpenAIAgent:
         llm_chain = LLMChain(prompt=template, llm=self.llm)
         resp = ""
         if input_text:
-            logging.info(f"generating question for input text: {input_text}")
+            logger.info(f"generating question for input text: {input_text}")
             try:
                 resp = llm_chain.run(input_text=input_text)
             except ConnectionError:
-                logging.error(
+                logger.error(
                     f"Unable to generate question. Full traceback: {traceback.format_exc()}"
                 )
         else:
             try:
                 resp = llm_chain.run()
             except ConnectionError:
-                logging.error(
+                logger.error(
                     f"Unable to generate question. Full traceback: {traceback.format_exc()}"
                 )
 
-        logging.info("question generated")
+        logger.info("question generated")
 
         resp = resp.strip()
         return resp
