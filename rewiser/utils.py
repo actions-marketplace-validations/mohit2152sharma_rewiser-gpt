@@ -9,6 +9,8 @@ from typing import Any, Callable
 
 import markdown
 
+logger = logging.getLogger(__name__)
+
 
 def read_env_var(var: str, default: Any = None, raise_error: bool = True) -> str:
     """Reads a given environment variable from environment.
@@ -28,9 +30,9 @@ def read_env_var(var: str, default: Any = None, raise_error: bool = True) -> str
     # if running in github pipeline, append INPUT_ word to environment variable
     if os.getenv("GITHUB_ACTIONS") == "true":
         var = f"INPUT_{var}"
-        logging.info("Code is running in github action pipeline, appending INPUT_")
+        logger.info("Code is running in github action pipeline, appending INPUT_")
 
-    logging.info(f"Environment variable to read: {var}")
+    logger.info(f"Environment variable to read: {var}")
     result = os.getenv(var, default)
     if result is None and raise_error:
         raise ValueError(
@@ -78,7 +80,7 @@ def env_var(var: str, default: Any = None, raise_error: bool = True) -> Callable
                 except:
                     rs = read_env_var(var=var, default=default, raise_error=raise_error)
                     kwargs[func_var] = rs
-                    print(f"modified kwargs: {kwargs}")
+                    logger.info(f"modified kwargs: {kwargs}")
             result = func(*args, **kwargs)
             return result
 
@@ -119,14 +121,14 @@ def file_commit_date(filepath: str) -> str:
     date_str = cmnd_output.stdout.decode("utf-8").strip()
     date = datetime.strptime(date_str, "%a %b %d %H:%M:%S %Y %z")
     d = date.strftime("%Y-%m-%d")
-    logging.info(f"commit date for file: {filepath} is: {d}")
+    logger.debug(f"commit date for file: {filepath} is: {d}")
     return d
 
 
 def file_created_date(file: str):
     t = os.path.getctime(file)
     d = datetime.fromtimestamp(t).date()
-    print(f"file created date for file: {file} is {d}")
+    logger.debug(f"file created date for file: {file} is {d}")
     return d
 
 

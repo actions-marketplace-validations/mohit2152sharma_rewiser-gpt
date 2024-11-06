@@ -7,6 +7,8 @@ from rewiser.gpt.agent import OpenAIAgent
 from rewiser.gpt.utils import split_numbered_lines
 from rewiser.utils import env_var, file_commit_date, read_env_var
 
+logger = logging.getLogger(__name__)
+
 
 @env_var(var="DOC_DIRECTORY")
 def list_files(
@@ -43,13 +45,13 @@ def sort_files(doc_directory: str | None = None) -> List[str]:
     # sort the files using git
     # fetch the last committed date for each file and then sort by dates
     files = list_files(doc_directory=doc_directory, return_style="filepath")
-    print(f"all files: {files}")
+    logger.debug(f"all files: {files}")
     rs = sorted(
         files,
         key=lambda x: datetime.strptime(file_commit_date(x), "%Y-%m-%d"),
         reverse=True,
     )
-    logging.info(f"sorted files list: {rs}")
+    logger.debug(f"sorted files list: {rs}")
     return rs
 
 
@@ -74,13 +76,12 @@ def concat_files(filepaths: List[str]) -> str:
         splits.extend(split_numbered_lines(text=content))
 
     # for each split generate a question
+    splits = [x for x in splits if x]
     openai_api_key = read_env_var("OPENAI_API_KEY", raise_error=False)
     if openai_api_key:
         agent = OpenAIAgent(template_name="question_generator")
         questions = ""
-        logging.info(
-            f"Generating questions. Total questions to generate: {len(splits)}"
-        )
+        logger.info(f"Generating questions. Total questions to generate: {len(splits)}")
         counter = 1
         if splits:
             for split in splits:
@@ -89,9 +90,9 @@ def concat_files(filepaths: List[str]) -> str:
                     questions += f"{counter}. {question}\n"
                     counter += 1
 
-            logging.info("total questions generated")
+            logger.info("total questions generated")
             result += f"# Questions\n\n{questions}"
     else:
-        logging.info("openai_api_key is not provided skipping generating questions")
+        logger.info("openai_api_key is not provided skipping generating questions")
 
     return result
