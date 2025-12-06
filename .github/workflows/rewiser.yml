@@ -1,7 +1,5 @@
 name: Send Devlogs Rewiser Email
 on:
-  schedule:
-    - cron: '30 01 * * *'
   workflow_dispatch:
 jobs:
   send_email:
@@ -25,3 +23,4 @@ jobs:
           smtp_port: ${{ secrets.SMTP_PORT }}
           smtp_username: ${{ secrets.SMTP_USERNAME }}
           smtp_password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Rewiser-gpt Repo Email"
